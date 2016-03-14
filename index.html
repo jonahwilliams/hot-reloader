@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <title>Reload Example</title>
+</head>
+<body>
+  <div id="app">
+  </div>
+  <!-- Library Dependencies -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/node_modules/react/dist/react-with-addons.js"></script>
+  <script src="/node_modules/react-dom/dist/react-dom.js"></script>
+  <script>
+    'use strict';
+    const socket = io();
+    const fetchComponent = () => {
+      fetch('/hot')
+        .then((d) => d.text())
+        .then((d) => {
+          new Function(d)();
+        })
+        .then(() => {
+          ReactDOM.render(React.createElement(ListContainer.ListContainer), document.getElementById('app'));
+        });
+    };
+    socket.on('File Change', () => {
+      fetchComponent();
+    });
+    fetchComponent()
+  </script>
+</body>
+</html>
