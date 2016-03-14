@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Reload Example</title>
+    <link href="/src/components/component.css" rel="stylesheet"/>
 </head>
 <body>
   <div id="app">
@@ -12,6 +13,35 @@
   <script src="/node_modules/react-dom/dist/react-dom.js"></script>
   <script>
     'use strict';
+    function Model(inital) {
+      this.value = inital;
+      this.cbs = [];
+    }
+    Model.prototype.unsubscribe = function(index) {
+      this.cbs = this.cbs.slice(0, index);
+    }
+
+    Model.prototype.subscribe = function(cb) {
+      this.cbs.push(cb);
+      return () => this.unsubscribe(this.cbs.length - 1);
+    };
+
+    Model.prototype.notify = function() {
+      this.cbs.forEach(cb => cb(this.value));
+    };
+
+    Model.prototype.update = function(f) {
+      this.value = f(this.value);
+      this.notify();
+    };
+
+    var model = new Model(0);
+
+    setInterval(function() {
+      model.update(s => s + 1);
+    }, 1000);
+
+
     const socket = io();
     const fetchComponent = () => {
       fetch('/hot')
@@ -20,7 +50,7 @@
           new Function(d)();
         })
         .then(() => {
-          ReactDOM.render(React.createElement(ListContainer.ListContainer), document.getElementById('app'));
+          ReactDOM.render(React.createElement(ListContainer.ListContainer, {store: model}), document.getElementById('app'));
         });
     };
     socket.on('File Change', () => {

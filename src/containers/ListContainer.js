@@ -6,18 +6,24 @@ export class ListContainer extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      posts: []
+      counter: props.store.value
     };
+    this.unsib;
   }
   componentWillMount () {
-    this.setState({
-      posts: posts
+    this.unsub = this.props.store.subscribe((v) => {
+      this.setState({counter: v});
     });
+  }
+  componentWillUnmount () {
+    this.unsub();
   }
   render () {
     return (
       <div className='listContainer'>
-        <ListView posts={this.state.posts} />
+        <h1>{`This is a counter: ${this.state.counter}` }</h1>
+        <p>Notice that it doesn't reset! that's because this runs off an uberhack!</p>
+        <ListView posts={posts} />
       </div>);
   }
 }

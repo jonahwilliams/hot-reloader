@@ -1,0 +1,14 @@
+.list-view {
+
+}
+
+.list-col {
+}
+
+.list-row {
+  display: flex;
+}
+
+.list-row:hover {
+  background-color: orange;
+}
